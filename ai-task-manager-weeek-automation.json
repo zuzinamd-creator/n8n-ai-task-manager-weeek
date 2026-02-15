@@ -1,0 +1,2406 @@
+{
+  "name": "AI Agent TASKS + CRM",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -992,
+        -112
+      ],
+      "id": "5f631e4f-572d-4f47-8dfc-4034c69296a3",
+      "name": "Telegram Trigger",
+      "webhookId": "5868b515-79b7-42bf-bf7e-cada49acbb5a",
+      "credentials": {
+        "telegramApi": {
+          "id": "07tjLOhLkQ7X5bA4",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "93691daf-2cfb-4879-bdde-675c58803e6e",
+              "name": "command",
+              "value": "={{ ($('Telegram Trigger').item.json.message?.text?.startsWith('/') ? $('Telegram Trigger').item.json.message.text.split(' ')[0] : ($json?.command || \"\"))?.replace(/\\s+/g, \"\") || \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "8b3eac9e-ad9f-438f-b364-b424971c4e36",
+              "name": "=message_content",
+              "value": "={{ ($('Telegram Trigger').item.json.message?.text?.startsWith('/') ? $('Telegram Trigger').item.json.message.text.split(' ').slice(1).join(' ') : $('Telegram Trigger').item.json.message?.text)?.trim() || \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "ec0a8d76-2915-4418-8806-7dcfaf558a0f",
+              "name": "chat_id",
+              "value": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -608,
+        -112
+      ],
+      "id": "82b2c54b-554c-4600-9e0e-4618a8f7fe7f",
+      "name": "Config"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.command }}",
+                    "rightValue": "/start",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "886949ba-3c28-4f42-9b8c-616592f6e36c"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "start"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "6afb60e4-3e68-4147-9347-528003c3d215",
+                    "leftValue": "={{ $json.command === \"newtask_in_progress\" && $json.message_content !== \"\" }}",
+                    "rightValue": "=\"\"",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "newtask_in_progress"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "dbbbe0af-bbca-4d30-9004-e2ebcd129d93",
+                    "leftValue": "={{ $json.command }}",
+                    "rightValue": "/newtask",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "newtask"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "4f6cf5de-d1ed-462f-8f7b-fc1aaa352afe",
+                    "leftValue": "={{ $json.command }}",
+                    "rightValue": "/list",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "get_tasks"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "671850d7-d7b9-41bc-9dbc-4a70a24a490e",
+                    "leftValue": "={{ $json.command }}",
+                    "rightValue": "/updatetask",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "updatetask"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "31eabbdc-d460-4552-a0fc-24f00737dc45",
+                    "leftValue": "={{ $json.command }}",
+                    "rightValue": "/cancel",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "cancel"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "b4ecdeec-15e3-442f-825a-535c19d8e1f0",
+                    "leftValue": "={{ $json.command }}",
+                    "rightValue": "updatetask_in_progress",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "updatetask_in_progress"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        0,
+        -176
+      ],
+      "id": "79a9de09-d3d8-4c9b-8ea8-1cadf6d5fae2",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chat_id }}",
+        "text": "=Привет! Я твой личный таск-менеджер. Для тебя доступны вот такие функции: \n/newtask — добавить новую задачу\n/list — посмотреть список задач\n/updatetask — обновить задачу\n",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        144,
+        -480
+      ],
+      "id": "d67a12c6-688c-48a1-88d4-e967903ac7c2",
+      "name": "Send a text message",
+      "webhookId": "4ae816e4-44bb-4dbb-8c39-ab36b2c52bf1",
+      "credentials": {
+        "telegramApi": {
+          "id": "07tjLOhLkQ7X5bA4",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.message_content }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "task_content",
+              "description": "Определи какую задачу ставит пользователь",
+              "required": true
+            },
+            {
+              "name": "deadline_at",
+              "description": "=СТРОГОЕ ПРАВИЛО: Если год не указан явно, ВСЕГДА используй 2025 год. Ты — помощник, который извлекает дедлайн (дату, время) из пользовательского текста.  Если в тексте есть конкретное время или дата — укажи их в ISO-формате (YYYY-MM-DD HH:mm в часовом поясе +03:00, если не указано иное).\n\nЕсли указано только слово вроде «завтра», «послезавтра», «через 2 дня», «через неделю» — преобразуй в конкретную дату относительно сегодняшнего дня.\n\nЕсли время не указано — верни завтрашний день в то же время, что и сейчас.\n\nСегодняшнее время: {{ $now }}.",
+              "required": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        448,
+        -464
+      ],
+      "id": "c4bb0ddc-fd92-444e-bf08-7d15fe215f4f",
+      "name": "Information Extractor"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {
+          "temperature": 0
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        448,
+        -288
+      ],
+      "id": "d2a8c33b-8c65-4a2e-b88c-583da09578bf",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "EdBHQZLvEcFRHXAl",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "45dc9890-b7fc-469d-9b6c-0bd9625fe0ef",
+              "leftValue": "={{ $json.output['deadline_at'] }}",
+              "rightValue": "={{ $now }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "before"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        752,
+        -496
+      ],
+      "id": "3fee7ebf-b817-4430-980a-8fd001c32448",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Config').item.json.chat_id }}",
+        "text": "={{ $json.output[0].content[0].text }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1536,
+        -384
+      ],
+      "id": "160fa15d-8315-4ece-8a5c-bf9427b718e3",
+      "name": "Send a text message2",
+      "webhookId": "91aefcd2-30fb-4508-8ff6-f3dfc7b2654e",
+      "credentials": {
+        "telegramApi": {
+          "id": "07tjLOhLkQ7X5bA4",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "qOHa8wtw9GVPlf0j",
+          "mode": "list",
+          "cachedResultName": "Tasks",
+          "cachedResultUrl": "/projects/W9qCwzoPGba5b9Qx/datatables/qOHa8wtw9GVPlf0j"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "chat_id",
+              "keyValue": "={{ $('Config').item.json.chat_id }}"
+            },
+            {
+              "keyName": "finished",
+              "condition": "isFalse"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        496,
+        16
+      ],
+      "id": "892ea719-93ca-4001-a18f-d9ba9f9866b9",
+      "name": "Get row(s)"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        784,
+        16
+      ],
+      "id": "2b190f82-16d6-4ff5-b28b-d795e5ed9135",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8aacf7d4-4c09-439a-8745-87bd76cfce43",
+              "name": "count",
+              "value": "={{ $json.data.length }}",
+              "type": "string"
+            },
+            {
+              "id": "32c909f0-b48a-42a7-9b00-0a24c91333c5",
+              "name": "message",
+              "value": "=📋Список ваших задач:\n{{ \n  $json.data.map(item => {\n    return `TASK-${item.id}\n${item.task_content}\n⏰Дедлайн: ${item.deadline_at}\n\n`;\n  }).join('')\n}}\nДля изменения задачи используйте её номер, например:\n\"/updatetask Заверши задачу 3\"",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        928,
+        16
+      ],
+      "id": "1bafe3c7-1f0e-497a-98b8-c33c67f86b5a",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Config').item.json.chat_id }}",
+        "text": "={{ $json.message }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1072,
+        16
+      ],
+      "id": "28e4923f-8bdc-4055-b013-3287ec4f8e83",
+      "name": "Send a text message3",
+      "webhookId": "968ce3a4-38f8-48f3-abda-f1f5331d851a",
+      "credentials": {
+        "telegramApi": {
+          "id": "07tjLOhLkQ7X5bA4",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "formatDate",
+        "date": "={{ $json.deadline_at }}",
+        "format": "custom",
+        "customFormat": "dd.mm.yyyy hh:mm",
+        "outputFieldName": "deadline_at",
+        "options": {
+          "includeInputFields": true
+        }
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        640,
+        16
+      ],
+      "id": "81241bd3-1149-4eb9-a381-091c4e1956f5",
+      "name": "Date & Time"
+    },
+    {
+      "parameters": {
+        "text": "={{ $('Config').item.json.message_content }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "task_id",
+              "type": "number",
+              "description": "Определи номер задачи, которую пользователь хочет обновить.",
+              "required": true
+            },
+            {
+              "name": "action",
+              "description": "=Определи действие, которое необходимо совершить с задачей.\nВозможный список действий:\n\nfinish — задача завершена\nchange_deadline — перенос дедлайна;\nremove — удалить задачу.",
+              "required": true
+            },
+            {
+              "name": "deadline_at",
+              "description": "=СТРОГОЕ ПРАВИЛО: Если год не указан явно, ВСЕГДА используй 2025 год.Ты — помощник, который извлекает дедлайн (дату, время) из пользовательского текста.  \nЕсли пользователь просит перенести deadline, то запиши сюда новое время дедлайна.\nЕсли в тексте есть конкретное время или дата — укажи их в ISO-формате (YYYY-MM-DD HH:MM в часовом поясе +03:00, если не указано иное).\n\nЕсли указано только слово вроде «завтра», «послезавтра», «через 2 дня», «через неделю» — преобразуй в конкретную дату относительно сегодняшнего дня.\n\nЕсли время не указано — верни \"\".\n\nСегодняшнее время: {{ $now }}."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        448,
+        320
+      ],
+      "id": "770bd78c-89af-476e-b353-59efb2619b8a",
+      "name": "Information Extractor1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {
+          "temperature": 0
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        448,
+        464
+      ],
+      "id": "1d7db1b5-f3fe-49dc-bf9c-1e4b0c8200b6",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "EdBHQZLvEcFRHXAl",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.output.action }}",
+                    "rightValue": "change_deadline",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "b67a3afd-9aee-476f-a3b9-447710b3cf15"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "change_deadline"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "3ca077e9-a793-4cac-a9b3-6445d5fe3a29",
+                    "leftValue": "={{ $json.output.action }}",
+                    "rightValue": "finish",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "finish"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "147987e2-7963-4448-8063-6721d21299f1",
+                    "leftValue": "={{ $json.output.action }}",
+                    "rightValue": "remove",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "remove"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        816,
+        304
+      ],
+      "id": "7b907172-9de2-45f5-8b7f-82df483ae6ab",
+      "name": "Switch1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "70efd375-533a-4928-9f47-c0f940985cf1",
+              "leftValue": "={{ $json.output.deadline_at }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1024,
+        176
+      ],
+      "id": "b0f0f33d-311e-4f04-9ab5-82ace52e8053",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "qOHa8wtw9GVPlf0j",
+          "mode": "list",
+          "cachedResultName": "Tasks",
+          "cachedResultUrl": "/projects/W9qCwzoPGba5b9Qx/datatables/qOHa8wtw9GVPlf0j"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyValue": "={{ $('Information Extractor1').item.json.output.task_id }}"
+            },
+            {
+              "keyName": "chat_id",
+              "keyValue": "={{ $('Config').item.json.chat_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "finished": false,
+            "deadline_at": "={{ $('Information Extractor1').item.json.output.deadline_at }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "user_id",
+              "displayName": "user_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "task_content",
+              "displayName": "task_content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "deadline_at",
+              "displayName": "deadline_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "finished",
+              "displayName": "finished",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        176
+      ],
+      "id": "6f7beebc-d9a7-437f-b2c0-f54cfebcfd53",
+      "name": "Update deadline_at"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Config').item.json.chat_id }}",
+        "text": "={{ $json.output[0].content[0].text }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2960,
+        320
+      ],
+      "id": "aa4cdae6-34d8-4690-88d7-fba752dce29b",
+      "name": "Send a text message5",
+      "webhookId": "f49292a2-bafa-42b6-87f0-e0d608bf5103",
+      "credentials": {
+        "telegramApi": {
+          "id": "07tjLOhLkQ7X5bA4",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "Ты — дружелюбный Telegram-бот-ассистент. Твоя задача — формулировать развёрнутые и понятные сообщения о задачах для пользователя. \nСообщение должно включать:\n- Подтверждение действия\n- Содержание задачи\n- Дедлайн задачи (формат dd.MM.yyyy hh:mm)\n- Дружелюбное пожелание пользователю\n\nВерни ответ в текстовой форме, добавь эмодзи, где это уместно."
+            },
+            {
+              "content": "=Создана новая задача:\nСодержание: {{$json.task_content}}\nДедлайн: {{$json.deadline_at}}\n"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        1264,
+        -384
+      ],
+      "id": "83d69f1f-2fa8-49e5-b06f-b64f354d2c9b",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "EdBHQZLvEcFRHXAl",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "Ты — дружелюбный ассистент таск-менеджера в Telegram.\nТвоя задача — кратко и понятно сообщать пользователю результат действия.\nПиши на русском языке, добавь эмодзи, где это уместно.\nСообщения должны быть вежливыми и позитивными.\n"
+            },
+            {
+              "content": "=Пользователь изменил дедлайн задачи.\n\nДанные:\n- ID задачи: TASK-{{ $json.task_id }}\n- Новый дедлайн: {{ $json.deadline_at }}\n\nСформулируй ответ для Telegram в 2–3 строки:\n1. В первой строке — подтверждение изменения дедлайна\n2. Во второй строке — дедлайн в понятном виде\n3. Используй эмодзи, но не больше двух\n"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        1920,
+        160
+      ],
+      "id": "f19a1b1d-95fd-4a0b-969b-a465d7eed2dc",
+      "name": "Message a model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "EdBHQZLvEcFRHXAl",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "=Пользователь завершил задачу TASK-{{ $json.task_id }}.\nСформулируй подтверждение, что задача успешно завершена."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        1920,
+        320
+      ],
+      "id": "a2428bb1-9f75-4df1-8190-6f439ef25d91",
+      "name": "Message a model2",
+      "credentials": {
+        "openAiApi": {
+          "id": "EdBHQZLvEcFRHXAl",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "responses": {
+          "values": [
+            {}
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        1920,
+        480
+      ],
+      "id": "52279dc7-03b1-4a91-980b-241cf6faa346",
+      "name": "Message a model3",
+      "credentials": {
+        "openAiApi": {
+          "id": "EdBHQZLvEcFRHXAl",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4ddd0ed8-4ee1-40af-a43b-9d1fb211250d",
+              "name": "task_id",
+              "value": "={{ $('Information Extractor1').item.json.output.task_id }}",
+              "type": "string"
+            },
+            {
+              "id": "d51511a2-1262-4178-9f80-611b5df3b1e3",
+              "name": "deadline_at",
+              "value": "={{ $('Information Extractor1').item.json.output.deadline_at }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1776,
+        160
+      ],
+      "id": "3c000db5-660b-44ce-930d-d7c3c17a5c35",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "qOHa8wtw9GVPlf0j",
+          "mode": "list",
+          "cachedResultName": "Tasks",
+          "cachedResultUrl": "/projects/W9qCwzoPGba5b9Qx/datatables/qOHa8wtw9GVPlf0j"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "finished": false,
+            "notified": false,
+            "chat_id": "={{ $('Config').item.json.chat_id }}",
+            "task_content": "={{ $('Information Extractor').item.json.output.task_content }}",
+            "deadline_at": "={{ $('Information Extractor').item.json.output.deadline_at }}",
+            "weeek_task_id": "={{ $json.task.id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "chat_id",
+              "displayName": "chat_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "weeek_task_id",
+              "displayName": "weeek_task_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "task_content",
+              "displayName": "task_content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "deadline_at",
+              "displayName": "deadline_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "finished",
+              "displayName": "finished",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "notified",
+              "displayName": "notified",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1104,
+        -384
+      ],
+      "id": "f38175cd-5e2f-44db-ab4a-f9280a0478d0",
+      "name": "Insert row"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "qOHa8wtw9GVPlf0j",
+          "mode": "list",
+          "cachedResultName": "Tasks",
+          "cachedResultUrl": "/projects/W9qCwzoPGba5b9Qx/datatables/qOHa8wtw9GVPlf0j"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyValue": "={{ $('Information Extractor1').item.json.output.task_id }}"
+            },
+            {
+              "keyName": "chat_id",
+              "keyValue": "={{ $('Config').item.json.chat_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "finished": true
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "user_id",
+              "displayName": "user_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "task_content",
+              "displayName": "task_content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "deadline_at",
+              "displayName": "deadline_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "finished",
+              "displayName": "finished",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "dryRun": false
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        320
+      ],
+      "id": "4af08445-f7d5-48ba-844c-87859ceaee48",
+      "name": "Update finished"
+    },
+    {
+      "parameters": {
+        "operation": "deleteRows",
+        "dataTableId": {
+          "__rl": true,
+          "value": "qOHa8wtw9GVPlf0j",
+          "mode": "list",
+          "cachedResultName": "Tasks",
+          "cachedResultUrl": "/projects/W9qCwzoPGba5b9Qx/datatables/qOHa8wtw9GVPlf0j"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyValue": "={{ $('Information Extractor1').item.json.output.task_id }}"
+            },
+            {
+              "keyName": "chat_id",
+              "keyValue": "={{ $('Config').item.json.chat_id }}"
+            }
+          ]
+        },
+        "options": {
+          "dryRun": false
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        480
+      ],
+      "id": "d9cc4115-080f-4f2e-a72a-58f6026d3f04",
+      "name": "Update finished1"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "yL1WnZs8VNJb6qJl",
+          "mode": "list",
+          "cachedResultName": "context_command",
+          "cachedResultUrl": "/projects/W9qCwzoPGba5b9Qx/datatables/yL1WnZs8VNJb6qJl"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "chat_id",
+              "keyValue": "={{ $json.message.chat.id }}"
+            }
+          ]
+        },
+        "limit": 1
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        -816,
+        -112
+      ],
+      "id": "d1a95305-f3fb-4303-a659-e529670aab52",
+      "name": "Get context",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "e4d5cc26-b58d-4507-b119-fe9515903d26",
+              "leftValue": "={{ $json }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "empty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "4f325fe5-3e0c-484d-90ae-89775aeed276",
+              "leftValue": "={{ $('Telegram Trigger').item.json.message.text.split(' ')[0] ?? \"\"}}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "a685fe46-4a9d-4291-833f-332089e6a154",
+              "leftValue": "={{ $('Telegram Trigger').item.json.message.text.split(' ')[0] ?? \"\"}}",
+              "rightValue": "/start",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            },
+            {
+              "id": "574c1403-084c-440b-a17e-ac45c4195d5d",
+              "leftValue": "={{ $('Telegram Trigger').item.json.message.text.split(' ')[0] ?? \"\"}}",
+              "rightValue": "/list",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "8ff4f2a6-44a4-4d92-bf65-75fc9f46bf9e",
+              "leftValue": "={{ $('Telegram Trigger').item.json.message.text.split(' ')[0].indexOf('/')===0 }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -704,
+        -336
+      ],
+      "id": "d2cdae22-d057-4e9d-947c-f9e56707daef",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "yL1WnZs8VNJb6qJl",
+          "mode": "list",
+          "cachedResultName": "context_command",
+          "cachedResultUrl": "/projects/W9qCwzoPGba5b9Qx/datatables/yL1WnZs8VNJb6qJl"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "chat_id": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+            "command": "={{ $('Telegram Trigger').item.json.message.text.split(' ')[0] ?? \"\"}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "chat_id",
+              "displayName": "chat_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "command",
+              "displayName": "command",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        -544,
+        -352
+      ],
+      "id": "780055cc-dea6-4df3-aebc-12f3b3d9d4e2",
+      "name": "Insert row1"
+    },
+    {
+      "parameters": {
+        "mode": "chooseBranch",
+        "useDataOfInput": 2
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -432,
+        -128
+      ],
+      "id": "4e639dc5-8b4e-42f3-96cb-a70f2aedcfd6",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "946507f3-72a1-4763-882e-b3005918d50a",
+              "leftValue": "={{ $('Config').item.json.message_content }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "1a244550-3833-4314-8b4f-27ae6a01230d",
+              "leftValue": "={{ $('Config').item.json.command }}",
+              "rightValue": "/start",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "01f4be49-16b7-44dc-9383-e9cf6c3306ca",
+              "leftValue": "={{ $('Config').item.json.command }}",
+              "rightValue": "/list",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -256,
+        -128
+      ],
+      "id": "20cdf746-e95d-4a7c-be72-89ddf9d64a46",
+      "name": "If3"
+    },
+    {
+      "parameters": {
+        "operation": "deleteRows",
+        "dataTableId": {
+          "__rl": true,
+          "value": "yL1WnZs8VNJb6qJl",
+          "mode": "list",
+          "cachedResultName": "context_command",
+          "cachedResultUrl": "/projects/W9qCwzoPGba5b9Qx/datatables/yL1WnZs8VNJb6qJl"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "chat_id",
+              "keyValue": "={{ $json.result.chat.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        3104,
+        -384
+      ],
+      "id": "0b5cd36b-b873-404c-9ea3-0a220de1a56f",
+      "name": "Clean context"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.weeek.net/public/v1/tm/tasks",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer 9e5da912-f641-45b3-be1d-2165480f910e"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"title\": \"Тестовая задача из n8n\",\n  \"projectId\": 1,\n  \"dueDateTime\": \"2025-12-15T20:00:00Z\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        960,
+        -384
+      ],
+      "id": "442ad4a9-dce5-402f-9240-2cf491f824cb",
+      "name": "WEEEK — Create Task"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Config').item.json.chat_id }}",
+        "text": "Ошибка! дедлайн указан раньше текущей даты. Пожалуйста, измените дедлайн, введя текст заново.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        960,
+        -608
+      ],
+      "id": "72b471d5-1a80-4886-9086-82376c77dbcf",
+      "name": "Error deadline",
+      "webhookId": "0e7f09ef-babd-4dc7-9403-c364d9dacf1d",
+      "credentials": {
+        "telegramApi": {
+          "id": "07tjLOhLkQ7X5bA4",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "yL1WnZs8VNJb6qJl",
+          "mode": "list",
+          "cachedResultName": "context_command",
+          "cachedResultUrl": "/projects/W9qCwzoPGba5b9Qx/datatables/yL1WnZs8VNJb6qJl"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "chat_id": "={{ $('Config').item.json.chat_id }}",
+            "command": "={{ $('Config').item.json.command === '/newtask' ? 'newtask_in_progress' : 'updatetask_in_progress' }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "chat_id",
+              "displayName": "chat_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "command",
+              "displayName": "command",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        144,
+        272
+      ],
+      "id": "76c2983f-0d92-45bd-8201-d5c9dd26c224",
+      "name": "Insert row2"
+    },
+    {
+      "parameters": {
+        "operation": "deleteRows",
+        "dataTableId": {
+          "__rl": true,
+          "value": "yL1WnZs8VNJb6qJl",
+          "mode": "list",
+          "cachedResultName": "context_command",
+          "cachedResultUrl": "/projects/W9qCwzoPGba5b9Qx/datatables/yL1WnZs8VNJb6qJl"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "chat_id",
+              "keyValue": "={{ $('Config').item.json.chat_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        -16,
+        272
+      ],
+      "id": "afbe3719-abea-4f84-9656-4b9f542a100f",
+      "name": "Clean context1",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "73df1992-bff9-4845-8650-dec167ccf27e",
+              "leftValue": "={{ $json.weeek_task_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1360,
+        176
+      ],
+      "id": "8cf00cb6-5432-47fd-9ee9-aac87d5d0557",
+      "name": "If4"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "https://api.weeek.net/public/v1/tm/tasks/{{ $json.weeek_task_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer 9e5da912-f641-45b3-be1d-2165480f910e"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"dueDateTime\": \"{{ $('Information Extractor1').item.json.output.deadline_at }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1568,
+        160
+      ],
+      "id": "36a156b7-1bed-437f-8a47-eb5a4d630c7d",
+      "name": "WEEEK — Update Task"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "d0c3449b-f842-4a84-a233-ddb130db94ed",
+              "leftValue": "={{ $json.weeek_task_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1408,
+        320
+      ],
+      "id": "7b7c9bfd-5483-4d2a-aec8-a823fd279816",
+      "name": "If5"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://api.weeek.net/public/v1/tm/tasks/{{ $json.weeek_task_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer 9e5da912-f641-45b3-be1d-2165480f910e"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"isCompleted\": true\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1632,
+        304
+      ],
+      "id": "b82882e8-a371-4d84-b049-c7316571d873",
+      "name": "WEEEK — Complete Task"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "214a5f6e-3cd7-4b31-ba6f-8c7ef724076a",
+              "leftValue": "={{ $json.weeek_task_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1408,
+        480
+      ],
+      "id": "06b1ba0b-3850-4fa6-a11c-91ecfa3b9d6f",
+      "name": "If6"
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "=https://api.weeek.net/public/v1/tm/tasks/{{ $json.weeek_task_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer 9e5da912-f641-45b3-be1d-2165480f910e"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"isCompleted\": true\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1632,
+        480
+      ],
+      "id": "2b9fd0b7-0577-471c-93f9-75e4850dd780",
+      "name": "WEEEK — Delete Task"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Config').item.json.chat_id }}",
+        "text": "🚫 Операция отменена. Жду новых команд!",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        368,
+        144
+      ],
+      "id": "b8dc7569-c2eb-411a-b2b7-e168dc3240a7",
+      "name": "Send a text message1",
+      "webhookId": "02780f84-6f85-44ae-b128-d03654f78f5f",
+      "credentials": {
+        "telegramApi": {
+          "id": "07tjLOhLkQ7X5bA4",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Config').item.json.chat_id }}",
+        "text": "={{ $('Config').item.json.command === '/newtask' ? '🆕 Опишите новую задачу (например: \"Купить молоко завтра\"):' : '✏️ Какую задачу обновить? Напишите номер и действие (например: \"TASK-15 готово\"):' }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -128,
+        80
+      ],
+      "id": "ccd3a8b7-fe36-4424-b03b-bbf1380174eb",
+      "name": "Request for task data",
+      "webhookId": "91aefcd2-30fb-4508-8ff6-f3dfc7b2654e",
+      "credentials": {
+        "telegramApi": {
+          "id": "07tjLOhLkQ7X5bA4",
+          "name": "Telegram account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Information Extractor1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Information Extractor1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Error deadline",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WEEEK — Create Task",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s)": {
+      "main": [
+        [
+          {
+            "node": "Date & Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Send a text message3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message3": {
+      "main": [
+        [
+          {
+            "node": "Clean context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date & Time": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor1": {
+      "main": [
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update finished",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update finished1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Update deadline_at",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update deadline_at": {
+      "main": [
+        [
+          {
+            "node": "If4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Send a text message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model1": {
+      "main": [
+        [
+          {
+            "node": "Send a text message5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model2": {
+      "main": [
+        [
+          {
+            "node": "Send a text message5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model3": {
+      "main": [
+        [
+          {
+            "node": "Send a text message5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Message a model1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert row": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update finished": {
+      "main": [
+        [
+          {
+            "node": "If5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update finished1": {
+      "main": [
+        [
+          {
+            "node": "If6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get context": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Insert row1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert row1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Request for task data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message2": {
+      "main": [
+        [
+          {
+            "node": "Clean context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message5": {
+      "main": [
+        [
+          {
+            "node": "Clean context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error deadline": {
+      "main": [
+        [
+          {
+            "node": "Clean context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WEEEK — Create Task": {
+      "main": [
+        [
+          {
+            "node": "Insert row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean context1": {
+      "main": [
+        [
+          {
+            "node": "Insert row2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If4": {
+      "main": [
+        [
+          {
+            "node": "WEEEK — Update Task",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WEEEK — Update Task": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If5": {
+      "main": [
+        [
+          {
+            "node": "WEEEK — Complete Task",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WEEEK — Complete Task": {
+      "main": [
+        [
+          {
+            "node": "Message a model2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If6": {
+      "main": [
+        [
+          {
+            "node": "WEEEK — Delete Task",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WEEEK — Delete Task": {
+      "main": [
+        [
+          {
+            "node": "Message a model3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message1": {
+      "main": [
+        [
+          {
+            "node": "Clean context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Request for task data": {
+      "main": [
+        [
+          {
+            "node": "Clean context1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "X78w8JEeX58XVgzi"
+  },
+  "versionId": "7931b689-af73-42f9-b9fa-8eb5ea2739ce",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "197d0a18a28a2435098ca9a3c631c53b28a6d25493c18efb956e08202bf63f6d"
+  },
+  "id": "X78w8JEeX58XVgzi",
+  "tags": []
+}
